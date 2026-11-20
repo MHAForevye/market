@@ -15,6 +15,7 @@ button:active { transform:scale(.97); }
 .src-stats { margin-top:8px; font-size:.82rem; line-height:1.55; color:var(--ink); }
 .setting-btn { width:100%; min-height:50px; display:flex; align-items:center; justify-content:flex-start; gap:10px; padding:10px 14px; font-size:1rem; text-align:left; }
 .setting-btn .state { margin-left:auto; font-weight:700; }
+a.setting-btn { text-decoration:none; color:inherit; }
 .stack { display:flex; flex-direction:column; gap:10px; }
 .pref-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:9px 0; border-bottom:2px dashed rgba(255,255,255,.2); font-size:1rem; }
 .pref-row:last-of-type { border-bottom:none; }

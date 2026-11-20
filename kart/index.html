@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://mikroklimakontrolmerkezi.forevye.workers.dev; base-uri 'self'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Hediye kartı · Forevye Mağaza</title>
+  <meta name="description" content="Kristallerini hediye kartına çevir, arkadaşına ya da başka cihazına taşı.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#36247f">
+  <link rel="icon" type="image/png" sizes="192x192" href="../icon.png">
+  <link rel="stylesheet" href="../css/fonts.css?v=6142ccc9">
+  <link rel="stylesheet" href="css/kart.css?v=de27531c">
+</head>
+<body>
+<a class="skip-link" href="#main">İçeriğe geç</a>
+<header class="top">
+  <a class="nav-back" href="../"><span aria-hidden="true">‹</span> Mağaza</a>
+  <h1>Hediye kartı</h1>
+  <div class="bal" aria-live="polite"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="M14 6h20l10 12-20 26L4 18z" fill="#7dd3fc" stroke="#1e3a5f" stroke-width="2.6" stroke-linejoin="round"/><path d="M14 6h20l10 12H4z" fill="#e0f2fe" stroke="#1e3a5f" stroke-width="2.6" stroke-linejoin="round"/></svg><b id="kBal">0</b><span class="sr">kristal</span></div>
+</header>
+<p class="offline" id="kOff" role="status" hidden>Sunucuya ulaşılamıyor. Son bilinen bakiye gösteriliyor, kart işlemleri bağlantı gelene kadar kapalı.</p>
+
+<main class="wrap" id="main">
+  <section class="stage" aria-label="Kart önizlemesi">
+    <div class="card-wrap">
+      <i class="card-shadow" aria-hidden="true"></i>
+      <div class="tilt" id="kTilt">
+        <div class="flipper" id="kFlip">
+          <div class="face front"><canvas id="kFront" width="1012" height="638"></canvas><i class="shine" aria-hidden="true"></i></div>
+          <div class="face back"><canvas id="kBack" width="1012" height="638"></canvas><i class="shine" aria-hidden="true"></i></div>
+        </div>
+      </div>
+    </div>
+    <p class="sr" id="kDesc" role="status"></p>
+    <div class="stage-bar">
+      <span class="tpl-name" id="kTplName"></span>
+      <button type="button" class="ghost" id="kTurn" aria-pressed="false">Kartı çevir</button>
+    </div>
+    <p class="stage-note" id="kStageNote" role="status"></p>
+  </section>
+
+  <div class="panel-col">
+    <div class="tabs" role="tablist" aria-label="Hediye kartı işlemleri">
+      <button type="button" role="tab" id="tab-new" aria-controls="pane-new" aria-selected="true">Kart oluştur</button>
+      <button type="button" role="tab" id="tab-use" aria-controls="pane-use" aria-selected="false" tabindex="-1">Kartı kullan</button>
+      <button type="button" role="tab" id="tab-mine" aria-controls="pane-mine" aria-selected="false" tabindex="-1">Kartlarım <i id="kMineN" hidden></i></button>
+    </div>
+
+    <section class="pane" id="pane-new" role="tabpanel" aria-labelledby="tab-new">
+      <div id="newForm">
+        <h2>Tasarım seç</h2>
+        <div class="picker" id="kPicker" role="radiogroup" aria-label="Kart tasarımı"></div>
+
+        <h2>Kaç kristal yüklensin?</h2>
+        <div class="field">
+          <label for="kAmt">Tutar</label>
+          <div class="amt">
+            <button type="button" class="step" id="kMinus" aria-label="Tutarı azalt">−</button>
+            <input type="text" id="kAmt" inputmode="numeric" autocomplete="off" value="100" aria-describedby="kAmtHint">
+            <button type="button" class="step" id="kPlus" aria-label="Tutarı artır">+</button>
+          </div>
+          <div class="chips" id="kChips"></div>
+          <p class="hint" id="kAmtHint"></p>
+        </div>
+
+        <div class="field two">
+          <div><label for="kFrm">Gönderen adı <small>isteğe bağlı</small></label><input type="text" id="kFrm" maxlength="24" autocomplete="off" placeholder="Ahmet"></div>
+          <div class="wide"><label for="kMsg">Mesaj <small>kartın arkasına yazılır</small></label><input type="text" id="kMsg" maxlength="80" autocomplete="off" placeholder="İyi ki doğdun!"></div>
+        </div>
+
+        <p class="err" id="kNewErr" role="alert"></p>
+        <div class="cta-row">
+          <button type="button" class="cta" id="kCreate"><span id="kCreateTx">Kartı oluştur</span></button>
+          <button type="button" class="ghost" id="kCreateNo" hidden>Vazgeç</button>
+        </div>
+        <p class="fine">Tutar hesabından hemen düşer. Kart 12 ay geçerlidir; kullanılmazsa süre dolunca ya da iptal edince kristaller sana geri döner.</p>
+      </div>
+
+      <div id="newDone" hidden>
+        <h2>Kartın hazır</h2>
+        <p class="lead">Kart numarasını, son kullanma tarihini ve CVV'yi birlikte gönder. Üçü de gerekir.</p>
+        <dl class="facts" id="kFacts"></dl>
+        <div class="acts">
+          <button type="button" class="cta small" id="kCopyAll">Bilgileri kopyala</button>
+          <button type="button" class="ghost" id="kCopyLink">Bağlantıyı kopyala</button>
+          <button type="button" class="ghost" id="kShareImg">Resmi paylaş</button>
+          <button type="button" class="ghost" id="kSaveImg">Resmi indir</button>
+        </div>
+        <button type="button" class="ghost again" id="kAgain">Başka kart oluştur</button>
+      </div>
+    </section>
+
+    <section class="pane" id="pane-use" role="tabpanel" aria-labelledby="tab-use" hidden>
+      <h2>Kart bilgilerini gir</h2>
+      <p class="lead">Kristaller bu cihazdaki hesabına eklenir. Kart tek kullanımlıktır.</p>
+      <div class="field"><label for="kNo">Kart numarası</label><input type="text" id="kNo" class="num" inputmode="numeric" autocomplete="off" maxlength="9" placeholder="0000 0000"></div>
+      <div class="field two">
+        <div><label for="kEx">Son kullanma</label><input type="text" id="kEx" class="num" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="AA/YY"></div>
+        <div><label for="kCvv">CVV</label><input type="text" id="kCvv" class="num" inputmode="numeric" autocomplete="off" maxlength="3" placeholder="000"></div>
+      </div>
+      <p class="err" id="kUseErr" role="alert"></p>
+      <div class="cta-row"><button type="button" class="cta" id="kUse" disabled>Kristalleri hesabıma ekle</button></div>
+      <p class="fine">Çok sayıda yanlış denemede kart bir süre kilitlenir.</p>
+    </section>
+
+    <section class="pane" id="pane-mine" role="tabpanel" aria-labelledby="tab-mine" hidden>
+      <h2>Oluşturduğun kartlar</h2>
+      <p class="empty" id="kMineEmpty" hidden>Henüz kart oluşturmadın. İlk kartını “Kart oluştur” sekmesinden yapabilirsin.</p>
+      <ul class="mine" id="kMine"></ul>
+    </section>
+
+    <details class="acct">
+      <summary>Hesabım ve yedek</summary>
+      <div class="acct-in">
+        <p class="hint">Site ID'n: <b id="kId">--------</b> <button type="button" class="mini" id="kCopyId">Kopyala</button></p>
+        <p class="hint">Bu sayfa Mağaza ile aynı hesabı kullanır. Başka bir tarayıcıda açtıysan yedek metnini yapıştırıp hesabını yükleyebilirsin. Yedek metni hesabı açar, kimseyle paylaşma.</p>
+        <div class="acts"><button type="button" class="ghost" id="kBackCopy">Yedeği kopyala</button></div>
+        <label for="kBackIn">Yedekten yükle</label>
+        <textarea id="kBackIn" rows="2" autocomplete="off" spellcheck="false" placeholder="Yedek metnini buraya yapıştır"></textarea>
+        <div class="acts"><button type="button" class="ghost" id="kBackLoad">Hesabı yükle</button></div>
+      </div>
+    </details>
+  </div>
+</main>
+
+<script src="../config.js?v=ffdb8f65"></script>
+<script src="../js/hesap.js?v=98b11734"></script>
+<script src="js/kart-core.js?v=ecb54ff2"></script>
+<script src="js/kart-art.js?v=4a996945"></script>
+<script src="js/kart.js?v=671a8dc1"></script>
+</body>
+</html>
